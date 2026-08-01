@@ -11,4 +11,5 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<MenuMessage> MenuMessages => Set<MenuMessage>();
+    public DbSet<FoodItem> FoodItems => Set<FoodItem>();
 }

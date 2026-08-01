@@ -11,13 +11,13 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(
         builder.Configuration.GetConnectionString("DefaultConnection")));
-        builder.Services.AddCors(options =>
+builder.Services.AddCors(options =>
 {
     options.AddPolicy("Vue", policy =>
     {
         policy.WithOrigins("http://localhost:5173")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+          .AllowAnyHeader()
+          .AllowAnyMethod();
     });
 });
 
@@ -30,31 +30,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles(); // serves files from wwwroot at URLs like /images/...
 app.MapControllers();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-    db.Database.EnsureCreated();
+    // Applies pending migrations (creates/updates tables). Prefer this over EnsureCreated().
+    db.Database.Migrate();
 
     if (!db.MenuMessages.Any())
     {
@@ -62,29 +46,25 @@ using (var scope = app.Services.CreateScope())
         {
             Message = "Hello from SQLite!"
         });
-
-        db.SaveChanges();
     }
-}
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-    db.Database.EnsureCreated();
-
-    if (!db.MenuMessages.Any())
+    if (!db.FoodItems.Any())
     {
-        db.MenuMessages.Add(new MenuMessage
+        db.FoodItems.Add(new FoodItem
         {
-            Message = "Hello from SQLite!"
+            Name = "Pizza",
+            Description = "Cheesy, cheesy goodness.",
+            ImageUrl = "/images/pizza_1.jpg"
         });
-
-        db.SaveChanges();
+        db.FoodItems.Add(new FoodItem
+        {
+            Name = "Chicken Tikka Masala",
+            Description = "Tomato base, many spices, adjustable spiciness.",
+            ImageUrl = "/images/chicken_tikka_masala_1.webp"
+        });
     }
+
+    db.SaveChanges();
 }
+
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

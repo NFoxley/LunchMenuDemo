@@ -1,0 +1,5 @@
+lunchmenu.db
+Backend/bin
+Backend/obj
+backend/bin/Debug/net10.0/Backend.dll
+backend/bin/Debug/net10.0/Backend.pdb
