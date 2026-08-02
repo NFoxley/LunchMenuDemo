@@ -5,7 +5,7 @@ import { ref } from 'vue'
 <template>
     <footer>
         <div
-            class="flex flex-col-reverse items-center gap-10 gap-y-20 py-24 pt-20 md:flex md:flex-row md:flex-wrap md:justify-between md:gap-10 md:py-24 lg:flex-nowrap">
+            class="footer-first-row flex flex-col-reverse items-center gap-10 gap-y-20 py-24 pt-20 md:flex md:flex-row md:flex-wrap md:justify-between md:gap-10 md:py-24 lg:flex-nowrap">
             <div class="md:basis-full lg:basis-auto">
                 <img height="165" dam-content-type="Image" alt="Logo" width="150" filename="script-added-filename.svg"
                     thumbnailsrc="https://uoi-q-001.sitecorecontenthub.cloud/api/gateway/41299/thumbnail"

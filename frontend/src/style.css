@@ -122,12 +122,10 @@ p {
   }
 }
 
-#app {
-  width: 1126px;
+#app {  
   max-width: 100%;
   margin: 0 auto;
   text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -306,13 +304,15 @@ nav ul li {
 nav ul li a {
   display: block;
   color: #000;
-  padding: 14px 16px;
+  padding: 28px 16px;  
   text-decoration: none;
   font-family: "Public Sans", "Public Sans Fallback", sans-serif;
 }
 
 ul li a:hover {
-  background-color: #111111;
+  text-decoration: underline;
+  text-decoration-color: #008080;
+  text-decoration-thickness: 3px;
 }
 
 /* main {
@@ -338,7 +338,7 @@ main.flex {
   color: #000;
 }
 .search button {
-  background-color: #fff;
+  background-color: #dcddde;
   color: #000;
 }
 .logo {
@@ -484,7 +484,18 @@ footer {
   --tw-bg-opacity: 1;
   background-color: rgb(25 25 25 / var(--tw-bg-opacity, 1));
   color: #fff;
-  font-family: "Public Sans", "Public Sans Fallback";
+  font-family: "Public Sans", "Public Sans Fallback";  
+}
+
+.footer-first-row {
+  margin: 0 4em;
+}
+
+footer .footer-first-row address,
+footer .footer-first-row a {
+  font-family: "Public Sans", "Public Sans Fallback", sans-serif;
+  font-style: normal;
+  text-align: left;
 }
 
 .text-brand-white a {
@@ -498,4 +509,8 @@ footer {
 }
 .text-brand-white {
   text-decoration: none;
+}
+
+.font-extrabold {
+  font-weight: 800;
 }
