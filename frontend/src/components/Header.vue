@@ -1,11 +1,12 @@
 <script setup>
-import { ref } from 'vue'
+import { RouterLink } from 'vue-router'
 </script>
 
 <template>
     <header>
         <nav class="flex">
-            <div
+            <RouterLink
+                to="/"
                 class="logo flex h-headerNav w-12 items-center justify-center motion-safe:transition-colors bg-gold text-brand-black">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-[26px]" viewBox="0 0 26 51" fill="currentColor">
                     <g clip-path="url(#clip0_2968_58176)">
@@ -22,7 +23,7 @@ import { ref } from 'vue'
                         </clipPath>
                     </defs>
                 </svg>
-            </div>
+            </RouterLink>
             <div class="flex-expand search">
                 <div class="absolute opacity-85 transition-all md:left-2 md:right-auto right-6">
                     <button type="submit" aria-label="Search" class="block">
@@ -36,7 +37,7 @@ import { ref } from 'vue'
                 Search
             </div>
             <ul>
-                <!-- <li><a>Search</a></li> -->
+                <li><RouterLink to="/admin">Food Admin</RouterLink></li>
                 <li><a>Explore</a></li>
                 <li><a>Costs</a></li>
                 <li><a>Admissions</a></li>
