@@ -16,6 +16,27 @@ namespace Backend.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
 
+            modelBuilder.Entity("Backend.Models.FoodItem", b =>
+                {
+                    b.Property<int>("FoodItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("FoodItemId");
+
+                    b.ToTable("FoodItems");
+                });
+
             modelBuilder.Entity("Backend.Models.MenuMessage", b =>
                 {
                     b.Property<int>("Id")

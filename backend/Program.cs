@@ -1,90 +1,117 @@
+using Backend.Auth;
 using Backend.Data;
 using Backend.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.Configure<DemoAuthOptions>(
+    builder.Configuration.GetSection(DemoAuthOptions.SectionName));
+
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(
         builder.Configuration.GetConnectionString("DefaultConnection")));
-        builder.Services.AddCors(options =>
+
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "LunchMenu.Auth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.Events.OnRedirectToLogin = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        };
+        options.Events.OnRedirectToAccessDenied = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return Task.CompletedTask;
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(AuthPolicies.CanEditMenu, policy =>
+        policy.RequireRole(AppRoles.FoodAdmin));
+});
+
+builder.Services.AddCors(options =>
 {
     options.AddPolicy("Vue", policy =>
     {
         policy.WithOrigins("http://localhost:5173")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
 var app = builder.Build();
 app.UseCors("Vue");
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-    db.Database.EnsureCreated();
+    db.Database.Migrate();
 
-    if (!db.MenuMessages.Any())
+    if (!db.FoodItems.Any())
     {
-        db.MenuMessages.Add(new MenuMessage
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        db.FoodItems.Add(new FoodItem
         {
-            Message = "Hello from SQLite!"
+            Name = "Pizza",
+            Description = "Cheesy, cheesy goodness.",
+            ImageUrl = "/images/pizza_1.jpg",
+            MenuDates =
+            [
+                new FoodItemMenuDate { Date = today },
+                new FoodItemMenuDate { Date = today.AddDays(7) },
+            ],
         });
-
-        db.SaveChanges();
+        db.FoodItems.Add(new FoodItem
+        {
+            Name = "Chicken Tikka Masala",
+            Description = "Tomato base, many spices, adjustable spiciness.",
+            ImageUrl = "/images/chicken_tikka_masala_1.webp",
+            MenuDates =
+            [
+                new FoodItemMenuDate { Date = today },
+            ],
+        });
     }
-}
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-    db.Database.EnsureCreated();
-
-    if (!db.MenuMessages.Any())
+    else if (!db.FoodItemMenuDates.Any())
     {
-        db.MenuMessages.Add(new MenuMessage
+        // Existing DBs created before menu dates: schedule current items for today.
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        foreach (var item in db.FoodItems.ToList())
         {
-            Message = "Hello from SQLite!"
-        });
-
-        db.SaveChanges();
+            db.FoodItemMenuDates.Add(new FoodItemMenuDate
+            {
+                FoodItemId = item.FoodItemId,
+                Date = today,
+            });
+        }
     }
+
+    db.SaveChanges();
 }
+
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
