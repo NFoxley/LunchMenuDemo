@@ -49,30 +49,21 @@ onMounted(loadItems)
     <Header />
     <section class="menu-items">
       <div class="menu-date-nav">
-        <button
-          type="button"
-          class="menu-date-btn"
-          :disabled="!canGoPrev"
-          aria-label="Previous day"
-          @click="goPrev"
-        >
+        <button type="button" class="menu-date-btn" :disabled="!canGoPrev" aria-label="Previous day" @click="goPrev">
           ‹
         </button>
-        <h1>Lunch Menu: {{ selectedLabel }}</h1>
-        <button
-          type="button"
-          class="menu-date-btn"
-          :disabled="!canGoNext"
-          aria-label="Next day"
-          @click="goNext"
-        >
+        <span class="flex column">
+          <h1>Lunch Menu: {{ selectedLabel }}</h1>
+          <h2>Idaho Student Union Building</h2>
+        </span>
+        <button type="button" class="menu-date-btn" :disabled="!canGoNext" aria-label="Next day" @click="goNext">
           ›
         </button>
       </div>
       <p v-if="items.length === 0" class="admin-hint">No dishes scheduled for this day.</p>
       <div v-for="item in items" :key="item.foodItemId" class="food-list">
-        <div class="food-item-text">
-          <h2>{{ item.name }}</h2>
+        <div class="food-item-text flex">
+          <h3>{{ item.name }}</h3>
           <p>{{ item.description }}</p>
         </div>
         <img v-if="item.imageUrl" :src="item.imageUrl" :alt="item.name" />

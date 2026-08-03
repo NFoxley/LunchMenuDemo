@@ -92,7 +92,7 @@ async function onAddFood() {
       formError.value = data.message || 'Could not add food item.'
       return
     }
-
+    console.log('Added food item:', data)
     formSuccess.value = `Added “${data.name}”.`
     name.value = ''
     description.value = ''
@@ -133,11 +133,11 @@ onMounted(loadItems)
         <form class="admin-form" @submit.prevent="onAddFood">
           <label>
             Name
-            <input v-model="name" type="text" required placeholder="Baked Alaska"/>
+            <input id="food name" v-model="name" type="text" required placeholder="Baked Alaska"/>
           </label>
           <label>
             Description
-            <textarea v-model="description" rows="3" placeholder="Sounds fancy, tastes great."/>
+            <textarea id="food description" v-model="description" rows="3" placeholder="Sounds fancy, tastes great."/>
           </label>
           <label>
             Menu date
