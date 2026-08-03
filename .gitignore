@@ -3,3 +3,8 @@ Backend/bin
 Backend/obj
 backend/bin/Debug/net10.0/Backend.dll
 backend/bin/Debug/net10.0/Backend.pdb
+node_modules/
+CRUDTests/bin
+CRUDTests/obj
+Backend/Migrations
+backend/Migrations/AppDbContextModelSnapshot.cs
