@@ -8,3 +8,4 @@ CRUDTests/bin
 CRUDTests/obj
 Backend/Migrations
 backend/Migrations/AppDbContextModelSnapshot.cs
+package-lock.json
